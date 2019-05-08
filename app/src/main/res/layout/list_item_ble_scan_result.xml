@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView_name"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text=""
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_bd_addr"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/textView_name"
+        app:layout_constraintTop_toTopOf="@+id/textView_name" />
+
+    <TextView
+        android:id="@+id/textView_rssi"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="0dp"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/textView_bd_addr"
+        app:layout_constraintTop_toTopOf="@+id/textView_bd_addr" />
+
+    <CheckBox
+        android:id="@+id/checkedTextView_ble_checked"
+        android:layout_width="55dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView_rssi"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

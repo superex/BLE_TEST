@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyRex</string>
+    <string name="scan">Scan</string>
+    <string name="title_activity_ble_scan">BLE_Scan</string>
+    <string name="ok">OK</string>
+    <string name="write_cmd">Write Data</string>
+    <string name="title_location_permission">Localtion Permission</string>
+    <string name="text_location_permission">Location Permission</string>
+</resources>
