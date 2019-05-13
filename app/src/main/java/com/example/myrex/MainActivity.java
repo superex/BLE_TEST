@@ -2,26 +2,30 @@ package com.example.myrex;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
 import android.bluetooth.BluetoothDevice;
 
+import android.net.*;
+
 import java.util.HashMap;
 import java.util.List;
-import java.util.Iterator;
+
+import java.io.*;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private static final String TAG = "rex_test";
 
-    int request_Code = 0;
+    final int ACTIVITY_SCAN_BLE = 0;
+    final int ACTIVITY_CHOOSE_FILE = 1;
 
     String [] _keys;
     String [] _items;
@@ -34,9 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         Button btn_scan = findViewById(R.id.button_scan);
-        Button ble_connection = findViewById(R.id.button_write_cmd);
+        Button btn_select_file = findViewById(R.id.button_select_file);
         btn_scan.setOnClickListener(this);
-        ble_connection.setOnClickListener(this);
+        btn_select_file.setOnClickListener(this);
 
         ListView listview = (ListView) findViewById(R.id.ble_connection);
         listview.setOnItemClickListener(this);
@@ -50,15 +54,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId()==R.id.button_scan)
         {
             Intent intent = new Intent(this, BLE_Scan.class);
-            startActivityForResult(intent, request_Code);
+            startActivityForResult(intent, ACTIVITY_SCAN_BLE);
         }
-        else if (v.getId()==R.id.button_write_cmd)
+        else if (v.getId()==R.id.button_select_file)
         {
-            writeTest();
+            selectFile();
         }
         else
         {
             Toast.makeText(this, "onClick", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void selectFile()
+    {
+        try
+        {
+            Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+            chooseFile.setType("*/*");
+
+            Intent intent = Intent.createChooser(chooseFile, "Choose a file");
+            startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG,ex.getMessage(),ex);
         }
     }
 
@@ -83,14 +103,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == request_Code)
+        if (requestCode == ACTIVITY_SCAN_BLE)
         {
             if (resultCode == RESULT_OK)
             {
                 showItems();
             }
         }
+        else if (requestCode == ACTIVITY_CHOOSE_FILE)
+        {
+
+            showSelectFile(data);
+        }
     }
+
+    void showSelectFile(Intent data)
+    {
+        try
+        {
+            Uri uri = data.getData();
+
+            String filePath = uri.getPath();
+            TextView tv_fileinfo = findViewById(R.id.textView_fileinfo);
+
+            tv_fileinfo.setText(filePath);
+
+            InputStream iStream =   getContentResolver().openInputStream(uri);
+            byte[] inputData = getBytes(iStream);
+            tv_fileinfo.setText(filePath +" :　"+inputData.length+" bytes");
+
+//            File file = new File(filePath);
+//            int size = (int) file.length();
+//            byte[] bytes = new byte[size];
+//            FileInputStream fis = null;
+//            try {
+//                fis = new FileInputStream(file);
+//                BufferedInputStream buf = new BufferedInputStream(fis);
+//                buf.read(bytes, 0, bytes.length);
+//                buf.close();
+//                tv_fileinfo.setText(filePath +" :　"+size+" bytes");
+//            } catch (Exception ex) {
+//                Log.e(TAG,ex.getMessage(),ex);
+//            }
+//            finally {
+//                if (fis!=null) fis.close();
+//            }
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG,ex.getMessage(),ex);
+        }
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
 
     void showItems()
     {
